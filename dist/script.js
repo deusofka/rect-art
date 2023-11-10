@@ -17,6 +17,7 @@ const app = Vue.createApp({
       saturationRange: 0,
       lightnessRange: 50,
       opacityRange: 100,
+      darkRarity: 100,
     }
   },
   computed: {
@@ -55,6 +56,17 @@ const app = Vue.createApp({
       this.ctx.fillRect(this.width/2, 0, this.width/2, this.height);
     },
     paintCornerRects() {
+      if (this.darkRarity < 0) {
+        this.darkRarity = 100;
+      } else if (0 < this.darkRarity && this.darkRarity < 1) {
+        this.darkRarity -= 0.0005;
+      } else if (1 < this.darkRarity && this.darkRarity < 10) {
+        this.darkRarity -= 0.005;
+      } else {
+        this.darkRarity -= 0.01;
+      }
+      
+      console.log('this.darkRarity', this.darkRarity)
       const saturationRangeBase = 100
       const randSaturation = Math.floor(saturationRangeBase - Math.random()*this.saturationRange) + '%';
       const lightnessRangeBase = (100 - this.lightnessRange)/2;
@@ -68,10 +80,10 @@ const app = Vue.createApp({
     },
     paintCornerRect(corner, offset, boxDims, color) {
       this.ctx.fillStyle = color;
-      // if (Math.floor(Math.random()*10) === 9) {
-      //   this.ctx.fillStyle = 'hsl(0, 0%, 0%)';
-      // } 
-      // else if (Math.floor(Math.random()*20) === 8) {
+      if ((this.darkRarity < 10) && Math.floor(Math.random()*this.darkRarity) === 0) {
+        this.ctx.fillStyle = `hsl(0, 0%, 0%, ${(Math.random()*50 + 50)}%)`;
+      } 
+      // else if (Math.floor(Math.random()*50) === 0) {
       //   this.ctx.fillStyle = 'hsl(0, 0%, 100%)';
       // }
         this.ctx.fillRect(this.getCornerX(corner, boxDims), this.getCornerY(corner, boxDims), boxDims.width, boxDims.height);
